@@ -4,10 +4,7 @@ require 'active_support/core_ext/date_and_time/calculations'
 require 'icalendar'
 
 day0 = Date.parse(ARGV[0]) # YYYY-MM-DD or other Date.parse()-able format
-
 start = day0.beginning_of_week.prev_day(9 * 7)
-
-events = Array.new((start..day0).to_a.size) { [] }
 
 MON, TUE, WED, THU, FRI, SAT, SUN = (0...7).to_a
 
@@ -69,12 +66,10 @@ cal = Icalendar::Calendar.new
     run_distance = run_days[i]
 
     def with_name_and_date(name, date)
-
         event = Icalendar::Event.new
         event.summary = name
         event.dtstart = Icalendar::Values::Date.new(date)
         event.alarm do |a|
-
             a.trigger = Icalendar::Values::DateTime.new(date.to_time.utc.advance(hours: 8, minutes: 30))
         end
         event
@@ -86,7 +81,8 @@ cal = Icalendar::Calendar.new
         cal.add_event(with_name_and_date("Mobility exercise", date))
     elsif is_strength_day
         cal.add_event(with_name_and_date("Strength exercise", date))
-    elsif !!run_distance
+    end
+    if !!run_distance
         name = "#{run_distance}mi #{run_distance > 10 ? 'Training Hike' : 'Hills Training Run'}"
         cal.add_event(with_name_and_date(name, date))
     end
